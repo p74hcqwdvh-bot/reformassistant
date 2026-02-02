@@ -77,6 +77,21 @@ document.getElementById("ayudas").onclick = () => {
 };
 
 document.getElementById("docs").onclick = () => {
+  document.getElementById("out").innerHTML = `
+    <h3>📂 Gestión documental</h3>
+
+    <p>Aquí podrás guardar:</p>
+    <ul>
+      <li>DNI</li>
+      <li>Certificado digital</li>
+      <li>Nóminas</li>
+      <li>Familia numerosa</li>
+      <li>Facturas reforma energética</li>
+    </ul>
+
+    <p>📌 Próximo paso: botón para subir archivos desde iPhone.</p>
+  `;
+};
   document.getElementById("out").textContent =
     "📂 Próximo paso: carpeta iCloud Drive + subida de documentos.";
 };
