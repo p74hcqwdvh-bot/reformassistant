@@ -1,7 +1,7 @@
 const app = document.getElementById("app");
 
 app.innerHTML = `
-  <div style="padding:16px">
+  <div style="padding:16px; font-family:Arial">
 
     <h2>🏡 ReformAssistant</h2>
     <p>Tu asistente personal de ayudas y documentos</p>
@@ -21,7 +21,7 @@ app.innerHTML = `
       <button id="docs">Mis documentos</button>
       <button id="chat">Asistente IA</button>
 
-      <p id="out" style="margin-top:15px"></p>
+      <div id="out" style="margin-top:15px"></div>
     </div>
 
   </div>
@@ -29,6 +29,8 @@ app.innerHTML = `
 
 const PIN_CORRECTO = "080874";
 
+
+// ✅ LOGIN
 document.getElementById("login").onclick = () => {
   const pin = document.getElementById("pin").value;
 
@@ -40,42 +42,35 @@ document.getElementById("login").onclick = () => {
   }
 };
 
+
+// ✅ BOTÓN AYUDAS
 document.getElementById("ayudas").onclick = () => {
   document.getElementById("out").innerHTML = `
     <h3>🏛️ Ayudas y subvenciones oficiales</h3>
 
     <ul>
-      <li>
-        🇪🇸 <a href="https://www.boe.es/buscar/boe.php" target="_blank">
-        BOE – Subvenciones nacionales</a>
-      </li>
+      <li>🇪🇸 <a href="https://www.boe.es/buscar/boe.php" target="_blank">
+        BOE – Subvenciones nacionales</a></li>
 
-      <li>
-        🌍 <a href="https://ec.europa.eu/info/funding-tenders/opportunities/portal" target="_blank">
-        Unión Europea – Funding & Tenders</a>
-      </li>
+      <li>🌍 <a href="https://ec.europa.eu/info/funding-tenders/opportunities/portal" target="_blank">
+        Unión Europea – Funding & Tenders</a></li>
 
-      <li>
-        🏠 <a href="https://www.idae.es/ayudas-y-financiacion" target="_blank">
-        IDAE – Ayudas energía y rehabilitación</a>
-      </li>
+      <li>🏠 <a href="https://www.idae.es/ayudas-y-financiacion" target="_blank">
+        IDAE – Ayudas energía y rehabilitación</a></li>
 
-      <li>
-        🇪🇸 <a href="https://www.subvenciones.gob.es/" target="_blank">
-        Base de Datos Nacional de Subvenciones</a>
-      </li>
+      <li>🇪🇸 <a href="https://www.subvenciones.gob.es/" target="_blank">
+        Base de Datos Nacional de Subvenciones</a></li>
 
-      <li>
-        🏘️ <a href="https://www.xunta.gal/axudas" target="_blank">
-        Xunta de Galicia – Ayudas autonómicas</a>
-      </li>
+      <li>🏘️ <a href="https://www.xunta.gal/axudas" target="_blank">
+        Xunta de Galicia – Ayudas autonómicas</a></li>
     </ul>
 
     <p>📌 Próximo paso: haremos un buscador automático personalizado para ti.</p>
   `;
 };
-};
 
+
+// ✅ BOTÓN DOCUMENTOS
 document.getElementById("docs").onclick = () => {
   document.getElementById("out").innerHTML = `
     <h3>📂 Gestión documental</h3>
@@ -89,14 +84,15 @@ document.getElementById("docs").onclick = () => {
       <li>Facturas reforma energética</li>
     </ul>
 
-    <p>📌 Próximo paso: botón para subir archivos desde iPhone.</p>
+    <p>📌 Próximo paso: subida de archivos desde iPhone + iCloud Drive.</p>
   `;
 };
-  document.getElementById("out").textContent =
-    "📂 Próximo paso: carpeta iCloud Drive + subida de documentos.";
-};
 
+
+// ✅ BOTÓN IA
 document.getElementById("chat").onclick = () => {
-  document.getElementById("out").textContent =
-    "🤖 Próximo paso: conectar OpenAI dentro de la app.";
+  document.getElementById("out").innerHTML = `
+    <h3>🤖 Asistente IA</h3>
+    <p>Próximo paso: conectar OpenAI dentro de la app.</p>
+  `;
 };
