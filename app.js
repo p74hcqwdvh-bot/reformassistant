@@ -41,8 +41,39 @@ document.getElementById("login").onclick = () => {
 };
 
 document.getElementById("ayudas").onclick = () => {
-  document.getElementById("out").textContent =
-    "📍 Próximo paso: conectamos buscador real de subvenciones Galicia/España/UE.";
+  document.getElementById("out").innerHTML = `
+    <h3>🏛️ Ayudas y subvenciones oficiales</h3>
+
+    <ul>
+      <li>
+        🇪🇸 <a href="https://www.boe.es/buscar/boe.php" target="_blank">
+        BOE – Subvenciones nacionales</a>
+      </li>
+
+      <li>
+        🌍 <a href="https://ec.europa.eu/info/funding-tenders/opportunities/portal" target="_blank">
+        Unión Europea – Funding & Tenders</a>
+      </li>
+
+      <li>
+        🏠 <a href="https://www.idae.es/ayudas-y-financiacion" target="_blank">
+        IDAE – Ayudas energía y rehabilitación</a>
+      </li>
+
+      <li>
+        🇪🇸 <a href="https://www.subvenciones.gob.es/" target="_blank">
+        Base de Datos Nacional de Subvenciones</a>
+      </li>
+
+      <li>
+        🏘️ <a href="https://www.xunta.gal/axudas" target="_blank">
+        Xunta de Galicia – Ayudas autonómicas</a>
+      </li>
+    </ul>
+
+    <p>📌 Próximo paso: haremos un buscador automático personalizado para ti.</p>
+  `;
+};
 };
 
 document.getElementById("docs").onclick = () => {
