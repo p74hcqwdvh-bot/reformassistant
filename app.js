@@ -45,15 +45,70 @@ document.getElementById("login").onclick = () => {
 
 /* ✅ AYUDAS */
 document.getElementById("ayudas").onclick = () => {
+
   document.getElementById("out").innerHTML = `
-    <h3>🏛️ Ayudas oficiales</h3>
-    <ul>
-      <li><a href="https://www.boe.es/buscar/boe.php" target="_blank">BOE – Subvenciones nacionales</a></li>
-      <li><a href="https://www.subvenciones.gob.es/" target="_blank">Base Nacional Subvenciones</a></li>
-      <li><a href="https://www.idae.es/ayudas-y-financiacion" target="_blank">IDAE – Energía y rehabilitación</a></li>
-      <li><a href="https://www.xunta.gal/axudas" target="_blank">Xunta Galicia – Ayudas</a></li>
-    </ul>
+
+  <h3>🏛️ Buscador de subvenciones</h3>
+
+  <p>Tipo de reforma:</p>
+
+  <select id="tipo">
+    <option value="aerotermia">Aerotermia</option>
+    <option value="fotovoltaica">Fotovoltaica</option>
+    <option value="rehabilitacion">Rehabilitación energética</option>
+    <option value="ventanas">Cambio de ventanas</option>
+    <option value="aislamiento">Aislamiento</option>
+  </select>
+
+  <p style="margin-top:10px">Coste estimado de la obra (€)</p>
+
+  <input id="coste" type="number" placeholder="Ej: 30000">
+
+  <br><br>
+
+  <button id="calcularAyuda">🔎 Buscar ayudas</button>
+
+  <div id="resultado" style="margin-top:20px"></div>
+
   `;
+
+  document.getElementById("calcularAyuda").onclick = () => {
+
+    const tipo = document.getElementById("tipo").value;
+    const coste = Number(document.getElementById("coste").value);
+
+    let porcentaje = 0.4;
+
+    if (tipo === "rehabilitacion") porcentaje = 0.6;
+    if (tipo === "aerotermia") porcentaje = 0.5;
+    if (tipo === "fotovoltaica") porcentaje = 0.45;
+
+    const ayuda = Math.round(coste * porcentaje);
+
+    document.getElementById("resultado").innerHTML = `
+
+      <h4>💰 Subvención estimada</h4>
+
+      <p>Tipo de obra: <b>${tipo}</b></p>
+
+      <p>Coste estimado: <b>${coste} €</b></p>
+
+      <p>Ayuda posible: <b style="color:#00ff88">${ayuda} €</b></p>
+
+      <hr>
+
+      <p>Solicitar ayuda en:</p>
+
+      <ul>
+        <li><a href="https://www.subvenciones.gob.es/" target="_blank">Base Nacional de Subvenciones</a></li>
+        <li><a href="https://www.xunta.gal/axudas" target="_blank">Xunta de Galicia</a></li>
+        <li><a href="https://www.idae.es/ayudas-y-financiacion" target="_blank">IDAE</a></li>
+      </ul>
+
+    `;
+
+  };
+
 };
 
 
