@@ -6,7 +6,7 @@ app.innerHTML = `
 <div style="padding:20px;font-family:Arial;max-width:760px">
 
 <h2>🏡 ReformAssistant</h2>
-<p>Encuentra y solicita subvenciones para tu reforma</p>
+<p>Encuentra las subvenciones disponibles para tu vivienda</p>
 
 <hr>
 
@@ -43,40 +43,88 @@ const ayudasDB = [
 {
 nombre:"Programa PREE rehabilitación energética",
 tipo:"rehabilitacion",
+zona:"todas",
 porcentaje:0.6,
 organismo:"IDAE"
 },
 
 {
-nombre:"Subvención aerotermia Next Generation",
+nombre:"Ayuda aerotermia Galicia",
 tipo:"aerotermia",
+zona:"galicia",
 porcentaje:0.5,
-organismo:"Xunta de Galicia"
+organismo:"Xunta"
 },
 
 {
 nombre:"Ayudas autoconsumo fotovoltaico",
 tipo:"fotovoltaica",
+zona:"todas",
 porcentaje:0.45,
 organismo:"IDAE"
 },
 
 {
-nombre:"Subvención aislamiento vivienda",
-tipo:"aislamiento",
-porcentaje:0.4,
-organismo:"Xunta"
+nombre:"Ayuda rehabilitación zona rural",
+tipo:"rehabilitacion",
+zona:"rural",
+porcentaje:0.7,
+organismo:"Programa Rural"
 },
 
 {
-nombre:"Ayuda cambio ventanas eficiencia",
+nombre:"Subvención cambio ventanas eficiencia",
 tipo:"ventanas",
+zona:"todas",
 porcentaje:0.35,
-organismo:"Xunta"
-
+organismo:"Estado"
 }
 
 ];
+
+
+/* ===== DETECTAR COMUNIDAD ===== */
+
+function detectarZona(cp){
+
+const prefijo = cp.substring(0,2);
+
+const mapa = {
+
+"15":"galicia",
+"27":"galicia",
+"32":"galicia",
+"36":"galicia",
+
+"28":"madrid",
+"08":"cataluna",
+"41":"andalucia",
+"46":"valencia"
+
+};
+
+return mapa[prefijo] || "otras";
+
+}
+
+
+
+/* ===== DETECTAR RURAL ===== */
+
+function esZonaRural(cp){
+
+const rurales = ["271","272","273","274","275"];
+
+for(let r of rurales){
+
+if(cp.startsWith(r)) return true;
+
+}
+
+return false;
+
+}
+
 
 
 /* ===== LOGIN ===== */
@@ -87,12 +135,12 @@ const pin = document.getElementById("pin").value;
 
 if(pin === PIN){
 
-document.getElementById("msg").innerHTML = "✅ Acceso correcto";
-document.getElementById("panel").style.display = "block";
+document.getElementById("msg").innerHTML="✅ Acceso correcto";
+document.getElementById("panel").style.display="block";
 
 }else{
 
-document.getElementById("msg").innerHTML = "❌ PIN incorrecto";
+document.getElementById("msg").innerHTML="❌ PIN incorrecto";
 
 }
 
@@ -106,7 +154,11 @@ document.getElementById("ayudas").onclick = () => {
 
 document.getElementById("out").innerHTML = `
 
-<h3>🏛️ Buscador de subvenciones</h3>
+<h3>🏛️ Buscar subvenciones</h3>
+
+<p>Código postal</p>
+
+<input id="cp" placeholder="Ej: 15401">
 
 <p>Tipo de reforma</p>
 
@@ -134,12 +186,26 @@ document.getElementById("out").innerHTML = `
 
 document.getElementById("buscar").onclick = () => {
 
+const cp = document.getElementById("cp").value;
 const tipo = document.getElementById("tipo").value;
 const coste = Number(document.getElementById("coste").value);
 
-let ayudas = ayudasDB.filter(a => a.tipo === tipo);
+const zona = detectarZona(cp);
+const rural = esZonaRural(cp);
 
-let html = "<h4>💰 Ayudas encontradas</h4>";
+let ayudas = ayudasDB.filter(a =>
+a.tipo === tipo &&
+(
+a.zona === "todas" ||
+a.zona === zona ||
+(rural && a.zona === "rural")
+)
+);
+
+let html = `
+<h4>📍 Zona detectada: ${zona}</h4>
+<p>Zona rural: ${rural ? "Sí" : "No"}</p>
+`;
 
 if(ayudas.length === 0){
 
@@ -175,13 +241,13 @@ html += `
 document.getElementById("resultado").innerHTML = html;
 
 
-/* ===== SOLICITUD ===== */
+/* ===== GENERAR SOLICITUD ===== */
 
 document.getElementById("solicitar").onclick = () => {
 
 document.getElementById("solicitud").innerHTML = `
 
-<h3>📄 Solicitud de subvención</h3>
+<h3>📄 Solicitud</h3>
 
 <input id="nombre" placeholder="Nombre completo"><br><br>
 
@@ -214,7 +280,7 @@ document.getElementById("doc").innerHTML = `
 <hr>
 
 <a target="_blank" href="https://sede.xunta.gal">
-Presentar solicitud en sede electrónica
+Presentar solicitud
 </a>
 
 `;
@@ -235,7 +301,7 @@ document.getElementById("docs").onclick = () => {
 
 document.getElementById("out").innerHTML = `
 
-<h3>📂 Gestor de documentos</h3>
+<h3>📂 Documentos</h3>
 
 <input type="file" id="fileInput" multiple>
 
@@ -272,15 +338,11 @@ document.getElementById("alertas").onclick = () => {
 
 const fecha = new Date().toLocaleDateString();
 
-localStorage.setItem("ultimaRevision", fecha);
-
 document.getElementById("out").innerHTML = `
 
-<h3>🔔 Alertas de subvenciones</h3>
+<h3>🔔 Alertas</h3>
 
 <p>Última revisión: ${fecha}</p>
-
-<p>Revisa periódicamente:</p>
 
 <ul>
 
@@ -289,8 +351,6 @@ document.getElementById("out").innerHTML = `
 <li><a target="_blank" href="https://www.xunta.gal/axudas">Xunta Galicia</a></li>
 
 <li><a target="_blank" href="https://www.idae.es/">IDAE</a></li>
-
-<li><a target="_blank" href="https://www.boe.es/">BOE</a></li>
 
 </ul>
 
@@ -308,12 +368,12 @@ document.getElementById("out").innerHTML = `
 
 <h3>🤖 Asistente IA</h3>
 
-<p>En futuras versiones podrás preguntar:</p>
+<p>Próximamente podrás preguntar:</p>
 
 <ul>
 
-<li>Qué ayudas puedo solicitar</li>
-<li>Cómo preparar la documentación</li>
+<li>Qué ayudas puedo pedir</li>
+<li>Cómo solicitarlas</li>
 <li>Cómo maximizar subvenciones</li>
 
 </ul>
