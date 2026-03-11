@@ -3,10 +3,10 @@ const app = document.getElementById("app");
 /* ===== INTERFAZ ===== */
 
 app.innerHTML = `
-<div style="padding:20px;font-family:Arial;max-width:760px">
+<div style="padding:20px;font-family:Arial;max-width:780px">
 
 <h2>🏡 ReformAssistant</h2>
-<p>Encuentra las subvenciones disponibles para tu vivienda</p>
+<p>Encuentra subvenciones para tu vivienda</p>
 
 <hr>
 
@@ -24,7 +24,7 @@ app.innerHTML = `
 <button id="ayudas">🏛️ Buscar ayudas</button>
 <button id="docs">📂 Documentos</button>
 <button id="alertas">🔔 Alertas</button>
-<button id="chat">🤖 Asistente IA</button>
+<button id="chat">🤖 IA</button>
 
 <div id="out" style="margin-top:25px"></div>
 
@@ -45,7 +45,8 @@ nombre:"Programa PREE rehabilitación energética",
 tipo:"rehabilitacion",
 zona:"todas",
 porcentaje:0.6,
-organismo:"IDAE"
+organismo:"IDAE",
+link:"https://www.idae.es/ayudas-y-financiacion"
 },
 
 {
@@ -53,37 +54,32 @@ nombre:"Ayuda aerotermia Galicia",
 tipo:"aerotermia",
 zona:"galicia",
 porcentaje:0.5,
-organismo:"Xunta"
+organismo:"Xunta de Galicia",
+link:"https://sede.xunta.gal"
 },
 
 {
-nombre:"Ayudas autoconsumo fotovoltaico",
+nombre:"Autoconsumo fotovoltaico",
 tipo:"fotovoltaica",
 zona:"todas",
 porcentaje:0.45,
-organismo:"IDAE"
+organismo:"IDAE",
+link:"https://www.idae.es/ayudas-y-financiacion"
 },
 
 {
-nombre:"Ayuda rehabilitación zona rural",
+nombre:"Rehabilitación zona rural",
 tipo:"rehabilitacion",
 zona:"rural",
 porcentaje:0.7,
-organismo:"Programa Rural"
-},
-
-{
-nombre:"Subvención cambio ventanas eficiencia",
-tipo:"ventanas",
-zona:"todas",
-porcentaje:0.35,
-organismo:"Estado"
+organismo:"Programa Rural",
+link:"https://www.subvenciones.gob.es/"
 }
 
 ];
 
 
-/* ===== DETECTAR COMUNIDAD ===== */
+/* ===== DETECTAR ZONA ===== */
 
 function detectarZona(cp){
 
@@ -97,31 +93,11 @@ const mapa = {
 "36":"galicia",
 
 "28":"madrid",
-"08":"cataluna",
-"41":"andalucia",
-"46":"valencia"
+"08":"cataluna"
 
 };
 
 return mapa[prefijo] || "otras";
-
-}
-
-
-
-/* ===== DETECTAR RURAL ===== */
-
-function esZonaRural(cp){
-
-const rurales = ["271","272","273","274","275"];
-
-for(let r of rurales){
-
-if(cp.startsWith(r)) return true;
-
-}
-
-return false;
 
 }
 
@@ -156,23 +132,21 @@ document.getElementById("out").innerHTML = `
 
 <h3>🏛️ Buscar subvenciones</h3>
 
-<p>Código postal</p>
+<p>Código postal vivienda</p>
 
 <input id="cp" placeholder="Ej: 15401">
 
-<p>Tipo de reforma</p>
+<p>Tipo reforma</p>
 
 <select id="tipo">
 
 <option value="aerotermia">Aerotermia</option>
 <option value="fotovoltaica">Fotovoltaica</option>
 <option value="rehabilitacion">Rehabilitación energética</option>
-<option value="ventanas">Cambio de ventanas</option>
-<option value="aislamiento">Aislamiento</option>
 
 </select>
 
-<p>Coste estimado (€)</p>
+<p>Coste obra (€)</p>
 
 <input id="coste" type="number" placeholder="30000">
 
@@ -191,21 +165,13 @@ const tipo = document.getElementById("tipo").value;
 const coste = Number(document.getElementById("coste").value);
 
 const zona = detectarZona(cp);
-const rural = esZonaRural(cp);
 
 let ayudas = ayudasDB.filter(a =>
 a.tipo === tipo &&
-(
-a.zona === "todas" ||
-a.zona === zona ||
-(rural && a.zona === "rural")
-)
+(a.zona === "todas" || a.zona === zona)
 );
 
-let html = `
-<h4>📍 Zona detectada: ${zona}</h4>
-<p>Zona rural: ${rural ? "Sí" : "No"}</p>
-`;
+let html = `<h4>📍 Zona detectada: ${zona}</h4>`;
 
 if(ayudas.length === 0){
 
@@ -225,6 +191,12 @@ html += `
 
 <p>Ayuda estimada: <b style="color:green">${ayuda} €</b></p>
 
+<button class="solicitar"
+data-link="${a.link}"
+data-nombre="${a.nombre}">
+📄 Solicitar ayuda
+</button>
+
 <hr>
 
 `;
@@ -233,61 +205,37 @@ html += `
 
 }
 
-html += `
-<button id="solicitar">📄 Crear solicitud</button>
-<div id="solicitud"></div>
-`;
-
 document.getElementById("resultado").innerHTML = html;
 
 
-/* ===== GENERAR SOLICITUD ===== */
+/* ===== BOTÓN SOLICITAR ===== */
 
-document.getElementById("solicitar").onclick = () => {
+document.querySelectorAll(".solicitar").forEach(btn=>{
 
-document.getElementById("solicitud").innerHTML = `
+btn.onclick = () => {
 
-<h3>📄 Solicitud</h3>
+const link = btn.dataset.link;
+const nombre = btn.dataset.nombre;
 
-<input id="nombre" placeholder="Nombre completo"><br><br>
+document.getElementById("resultado").innerHTML += `
 
-<input id="dni" placeholder="DNI"><br><br>
+<div style="padding:10px;border:1px solid #ccc;margin-top:10px">
 
-<input id="direccion" placeholder="Dirección vivienda"><br><br>
+<h4>Solicitud preparada</h4>
 
-<button id="generar">Generar solicitud</button>
+<p>Programa: ${nombre}</p>
 
-<div id="doc"></div>
-
-`;
-
-document.getElementById("generar").onclick = () => {
-
-const nombre = document.getElementById("nombre").value;
-const dni = document.getElementById("dni").value;
-const direccion = document.getElementById("direccion").value;
-
-document.getElementById("doc").innerHTML = `
-
-<h4>Solicitud generada</h4>
-
-<p><b>Solicitante:</b> ${nombre}</p>
-
-<p><b>DNI:</b> ${dni}</p>
-
-<p><b>Dirección:</b> ${direccion}</p>
-
-<hr>
-
-<a target="_blank" href="https://sede.xunta.gal">
-Presentar solicitud
+<a href="${link}" target="_blank">
+👉 Ir a la solicitud oficial
 </a>
 
+</div>
+
 `;
 
 };
 
-};
+});
 
 };
 
@@ -319,9 +267,7 @@ list.innerHTML = "";
 for(const file of input.files){
 
 const li = document.createElement("li");
-
 li.textContent = "📄 " + file.name;
-
 list.appendChild(li);
 
 }
@@ -336,13 +282,9 @@ list.appendChild(li);
 
 document.getElementById("alertas").onclick = () => {
 
-const fecha = new Date().toLocaleDateString();
-
 document.getElementById("out").innerHTML = `
 
-<h3>🔔 Alertas</h3>
-
-<p>Última revisión: ${fecha}</p>
+<h3>🔔 Alertas de ayudas</h3>
 
 <ul>
 
@@ -372,9 +314,8 @@ document.getElementById("out").innerHTML = `
 
 <ul>
 
-<li>Qué ayudas puedo pedir</li>
-<li>Cómo solicitarlas</li>
-<li>Cómo maximizar subvenciones</li>
+<li>Qué ayudas puedo solicitar</li>
+<li>Cómo preparar la solicitud</li>
 
 </ul>
 
