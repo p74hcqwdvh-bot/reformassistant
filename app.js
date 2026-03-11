@@ -3,10 +3,10 @@ const app = document.getElementById("app");
 /* ===== INTERFAZ ===== */
 
 app.innerHTML = `
-<div style="padding:20px;font-family:Arial;max-width:780px">
+<div style="padding:20px;font-family:Arial;max-width:800px">
 
 <h2>🏡 ReformAssistant</h2>
-<p>Encuentra subvenciones para tu vivienda</p>
+<p>Gestor inteligente de subvenciones para reformas</p>
 
 <hr>
 
@@ -24,7 +24,7 @@ app.innerHTML = `
 <button id="ayudas">🏛️ Buscar ayudas</button>
 <button id="docs">📂 Documentos</button>
 <button id="alertas">🔔 Alertas</button>
-<button id="chat">🤖 IA</button>
+<button id="chat">🤖 Asistente IA</button>
 
 <div id="out" style="margin-top:25px"></div>
 
@@ -50,11 +50,11 @@ link:"https://www.idae.es/ayudas-y-financiacion"
 },
 
 {
-nombre:"Ayuda aerotermia Galicia",
+nombre:"Aerotermia Galicia",
 tipo:"aerotermia",
 zona:"galicia",
 porcentaje:0.5,
-organismo:"Xunta de Galicia",
+organismo:"Xunta",
 link:"https://sede.xunta.gal"
 },
 
@@ -65,15 +65,6 @@ zona:"todas",
 porcentaje:0.45,
 organismo:"IDAE",
 link:"https://www.idae.es/ayudas-y-financiacion"
-},
-
-{
-nombre:"Rehabilitación zona rural",
-tipo:"rehabilitacion",
-zona:"rural",
-porcentaje:0.7,
-organismo:"Programa Rural",
-link:"https://www.subvenciones.gob.es/"
 }
 
 ];
@@ -132,7 +123,7 @@ document.getElementById("out").innerHTML = `
 
 <h3>🏛️ Buscar subvenciones</h3>
 
-<p>Código postal vivienda</p>
+<p>Código postal</p>
 
 <input id="cp" placeholder="Ej: 15401">
 
@@ -185,19 +176,22 @@ const ayuda = Math.round(coste * a.porcentaje);
 
 html += `
 
+<div style="border:1px solid #ccc;padding:10px;margin-top:10px">
+
 <p><b>${a.nombre}</b></p>
 
 <p>Organismo: ${a.organismo}</p>
 
-<p>Ayuda estimada: <b style="color:green">${ayuda} €</b></p>
+<p>Subvención estimada: <b style="color:green">${ayuda} €</b></p>
 
 <button class="solicitar"
+data-nombre="${a.nombre}"
 data-link="${a.link}"
-data-nombre="${a.nombre}">
-📄 Solicitar ayuda
+data-ayuda="${ayuda}">
+Solicitar ayuda
 </button>
 
-<hr>
+</div>
 
 `;
 
@@ -208,30 +202,71 @@ data-nombre="${a.nombre}">
 document.getElementById("resultado").innerHTML = html;
 
 
-/* ===== BOTÓN SOLICITAR ===== */
+/* ===== SOLICITAR ===== */
 
-document.querySelectorAll(".solicitar").forEach(btn=>{
+document.querySelectorAll(".solicitar").forEach(btn => {
 
 btn.onclick = () => {
 
+const programa = btn.dataset.nombre;
+const ayuda = btn.dataset.ayuda;
 const link = btn.dataset.link;
-const nombre = btn.dataset.nombre;
 
 document.getElementById("resultado").innerHTML += `
 
-<div style="padding:10px;border:1px solid #ccc;margin-top:10px">
+<div style="margin-top:20px;border:2px solid #4CAF50;padding:15px">
 
-<h4>Solicitud preparada</h4>
+<h3>📄 Preparar expediente</h3>
 
-<p>Programa: ${nombre}</p>
+<p>Programa: ${programa}</p>
 
-<a href="${link}" target="_blank">
-👉 Ir a la solicitud oficial
-</a>
+<p>Ayuda estimada: ${ayuda} €</p>
+
+<p>Introduce datos del solicitante</p>
+
+<input id="nombre" placeholder="Nombre completo"><br><br>
+
+<input id="dni" placeholder="DNI"><br><br>
+
+<input id="direccion" placeholder="Dirección vivienda"><br><br>
+
+<button id="generarExpediente">Generar expediente</button>
+
+<div id="expediente"></div>
 
 </div>
 
 `;
+
+document.getElementById("generarExpediente").onclick = () => {
+
+const nombre = document.getElementById("nombre").value;
+const dni = document.getElementById("dni").value;
+const direccion = document.getElementById("direccion").value;
+
+document.getElementById("expediente").innerHTML = `
+
+<h4>Expediente preparado</h4>
+
+<p><b>Solicitante:</b> ${nombre}</p>
+
+<p><b>DNI:</b> ${dni}</p>
+
+<p><b>Dirección:</b> ${direccion}</p>
+
+<p><b>Programa:</b> ${programa}</p>
+
+<p><b>Subvención estimada:</b> ${ayuda} €</p>
+
+<hr>
+
+<a href="${link}" target="_blank">
+👉 Abrir formulario oficial de solicitud
+</a>
+
+`;
+
+};
 
 };
 
@@ -284,7 +319,7 @@ document.getElementById("alertas").onclick = () => {
 
 document.getElementById("out").innerHTML = `
 
-<h3>🔔 Alertas de ayudas</h3>
+<h3>🔔 Alertas</h3>
 
 <ul>
 
@@ -310,12 +345,13 @@ document.getElementById("out").innerHTML = `
 
 <h3>🤖 Asistente IA</h3>
 
-<p>Próximamente podrás preguntar:</p>
+<p>Próximamente podrás:</p>
 
 <ul>
 
-<li>Qué ayudas puedo solicitar</li>
-<li>Cómo preparar la solicitud</li>
+<li>Encontrar ayudas automáticamente</li>
+<li>Preparar expedientes</li>
+<li>Calcular subvenciones</li>
 
 </ul>
 
